@@ -1,1 +1,99 @@
 
+a) Creating tables with primary keys and foreign keys:
+
+sql
+Copy code
+CREATE TABLE Flights (
+  flno INTEGER PRIMARY KEY,
+  from_city VARCHAR(50),
+  to_city VARCHAR(50),
+  distance INTEGER,
+  departs TIME,
+  arrives TIME,
+  price INTEGER
+);
+
+CREATE TABLE Aircraft (
+  aid INTEGER PRIMARY KEY,
+  aname VARCHAR(50),
+  cruisingrange INTEGER
+);
+
+CREATE TABLE Certified (
+  eid INTEGER,
+  aid INTEGER,
+  PRIMARY KEY (eid, aid),
+  FOREIGN KEY (eid) REFERENCES Employees(eid),
+  FOREIGN KEY (aid) REFERENCES Aircraft(aid)
+);
+
+CREATE TABLE Employees (
+  eid INTEGER PRIMARY KEY,
+  ename VARCHAR(50),
+  salary INTEGER
+);
+b) Inserting around 10 records in each table:
+
+sql
+Copy code
+INSERT INTO Flights (flno, from_city, to_city, distance, departs, arrives, price)
+VALUES
+  (1, 'New York', 'Los Angeles', 2500, '08:00', '12:00', 500),
+  (2, 'Los Angeles', 'Honolulu', 2500, '14:00', '18:00', 600),
+  (3, 'Chicago', 'Miami', 1300, '09:30', '13:00', 400),
+  -- Add more records here...
+
+INSERT INTO Aircraft (aid, aname, cruisingrange)
+VALUES
+  (101, 'Boeing 747', 5000),
+  (102, 'Airbus A320', 3000),
+  (103, 'Embraer E190', 2500),
+  -- Add more records here...
+
+INSERT INTO Certified (eid, aid)
+VALUES
+  (1, 101), -- Employee 1 certified for Aircraft 101
+  (2, 102), -- Employee 2 certified for Aircraft 102
+  (3, 103), -- Employee 3 certified for Aircraft 103
+  -- Add more records here...
+
+INSERT INTO Employees (eid, ename, salary)
+VALUES
+  (1, 'John Smith', 90000),
+  (2, 'Jane Doe', 80000),
+  (3, 'Michael Johnson', 75000),
+  -- Add more records here...
+c) Find the names of aircraft such that all pilots certified to operate them earn more than 80,000:
+
+sql
+Copy code
+SELECT DISTINCT a.aname
+FROM Aircraft a
+INNER JOIN Certified c ON a.aid = c.aid
+INNER JOIN Employees e ON c.eid = e.eid
+WHERE e.salary > 80000;
+d) For each pilot who is certified for more than three aircraft, find the eid and the maximum cruising range of the aircraft that he (or she) is certified for:
+
+sql
+Copy code
+SELECT c.eid, MAX(a.cruisingrange) AS max_cruising_range
+FROM Certified c
+INNER JOIN Aircraft a ON c.aid = a.aid
+GROUP BY c.eid
+HAVING COUNT(c.aid) > 3;
+e) Find the names of pilots whose salary is less than the price of the cheapest route from Los Angeles to Honolulu:
+
+sql
+Copy code
+SELECT e.ename
+FROM Employees e
+INNER JOIN Certified c ON e.eid = c.eid
+INNER JOIN Flights f ON c.aid = f.flno
+WHERE e.salary < (SELECT MIN(price) FROM Flights WHERE from_city = 'Los Angeles' AND to_city = 'Honolulu');
+f) Find the second highest salary of an employee:
+
+sql
+Copy code
+SELECT MAX(salary) AS second_highest_salary
+FROM Employees
+WHERE salary < (SELECT MAX(salary) FROM Employees);
