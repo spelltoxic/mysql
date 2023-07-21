@@ -1,1 +1,101 @@
+a) Creating tables with primary keys and foreign keys:
 
+sql
+Copy code
+CREATE TABLE Sailors (
+  sid INTEGER PRIMARY KEY,
+  sname VARCHAR(255),
+  rating INTEGER,
+  age REAL
+);
+
+CREATE TABLE Boats (
+  bid INTEGER PRIMARY KEY,
+  bname VARCHAR(255),
+  color VARCHAR(255)
+);
+
+CREATE TABLE Reserves (
+  sid INTEGER,
+  bid INTEGER,
+  day DATE,
+  PRIMARY KEY (sid, bid),
+  FOREIGN KEY (sid) REFERENCES Sailors(sid),
+  FOREIGN KEY (bid) REFERENCES Boats(bid)
+);
+b) Inserting around 10 records into each table:
+
+sql
+Copy code
+-- Sailors table
+INSERT INTO Sailors (sid, sname, rating, age) VALUES
+(1, 'John', 8, 25.5),
+(2, 'Emma', 9, 22.3),
+(3, 'Michael', 7, 28.1),
+(4, 'Sophia', 8, 24.9),
+(5, 'William', 6, 31.2),
+(6, 'Olivia', 9, 20.7),
+(7, 'James', 7, 26.8),
+(8, 'Ava', 8, 27.4),
+(9, 'Alexander', 6, 29.6),
+(10, 'Charlotte', 9, 21.5);
+
+-- Boats table
+INSERT INTO Boats (bid, bname, color) VALUES
+(101, 'Sea Breeze', 'Blue'),
+(102, 'Wave Rider', 'Red'),
+(103, 'Sailor\'s Delight', 'Red'),
+(104, 'Marine Dream', 'White'),
+(105, 'Ocean Queen', 'Green'),
+(106, 'Sunset Serenade', 'Orange'),
+(107, 'Aqua Adventure', 'Blue'),
+(108, 'Misty Morning', 'White'),
+(109, 'Calm Waters', 'Blue'),
+(110, 'Sunny Skies', 'Yellow');
+
+-- Reserves table
+INSERT INTO Reserves (sid, bid, day) VALUES
+(1, 102, '2023-07-01'),
+(2, 103, '2023-07-02'),
+(3, 101, '2023-07-03'),
+(4, 105, '2023-07-04'),
+(5, 103, '2023-07-05'),
+(6, 106, '2023-07-06'),
+(7, 104, '2023-07-07'),
+(8, 102, '2023-07-08'),
+(9, 105, '2023-07-09'),
+(10, 101, '2023-07-10');
+c) Finding the names of sailors who have reserved a red boat, listed in the order of age:
+
+sql
+Copy code
+SELECT s.sname
+FROM Sailors s
+INNER JOIN Reserves r ON s.sid = r.sid
+INNER JOIN Boats b ON r.bid = b.bid
+WHERE b.color = 'Red'
+ORDER BY s.age;
+d) Finding the names of sailors who have reserved boat 103:
+
+sql
+Copy code
+SELECT s.sname
+FROM Sailors s
+INNER JOIN Reserves r ON s.sid = r.sid
+WHERE r.bid = 103;
+e) Finding the name and the age of the youngest sailor:
+
+sql
+Copy code
+SELECT sname, age
+FROM Sailors
+ORDER BY age
+LIMIT 1;
+f) Finding the average age of sailors for each rating level that has at least two sailors:
+
+sql
+Copy code
+SELECT rating, AVG(age) AS avg_age
+FROM Sailors
+GROUP BY rating
+HAVING COUNT(*) >= 2;
