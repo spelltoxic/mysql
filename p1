@@ -1,0 +1,120 @@
+a) Create the tables with appropriate integrity constraints:
+
+Student table:
+CREATE TABLE Student (
+    Stud_no INTEGER PRIMARY KEY,
+    Stud_name VARCHAR(50) NOT NULL
+);
+
+Membership table:
+CREATE TABLE Membership (
+    Mem_no INTEGER PRIMARY KEY,
+    Stud_no INTEGER UNIQUE NOT NULL,
+    FOREIGN KEY (Stud_no) REFERENCES Student(Stud_no) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+Book table:
+CREATE TABLE Book (
+    book_no INTEGER PRIMARY KEY,
+    book_name VARCHAR(100) NOT NULL,
+    author VARCHAR(100) NOT NULL
+);
+
+Iss_rec table:
+CREATE TABLE Iss_rec (
+    iss_no INTEGER PRIMARY KEY,
+    iss_date DATE NOT NULL,
+    Mem_no INTEGER NOT NULL,
+    book_no INTEGER NOT NULL,
+    FOREIGN KEY (Mem_no) REFERENCES Membership(Mem_no) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (book_no) REFERENCES Book(book_no) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+b) Insert around 10 records in each of the tables:
+
+Inserting records into the Student table:
+
+INSERT INTO Student (Stud_no, Stud_name) VALUES
+(1, 'John Doe'),
+(2, 'Jane Smith'),
+(3, 'Michael Johnson'),
+(4, 'Emily Brown'),
+(5, 'David Lee'),
+(6, 'Sophia Wang'),
+(7, 'Daniel Kim'),
+(8, 'Olivia Garcia'),
+(9, 'William Martinez'),
+(10, 'Isabella Lopez');
+
+Inserting records into the Membership table:
+
+INSERT INTO Membership (Mem_no, Stud_no) VALUES
+(101, 1),
+(102, 2),
+(103, 3),
+(104, 4),
+(105, 5),
+(106, 6),
+(107, 7),
+(108, 8),
+(109, 9),
+(110, 10);
+
+Inserting records into the Book table:
+
+INSERT INTO Book (book_no, book_name, author) VALUES
+(201, 'The Great Gatsby', 'F. Scott Fitzgerald'),
+(202, 'To Kill a Mockingbird', 'Harper Lee'),
+(203, '1984', 'George Orwell'),
+(204, 'Pride and Prejudice', 'Jane Austen'),
+(205, 'The Catcher in the Rye', 'J.D. Salinger'),
+(206, 'Brave New World', 'Aldous Huxley'),
+(207, 'The Lord of the Rings', 'J.R.R. Tolkien'),
+(208, 'Harry Potter and the Sorcerer''s Stone', 'J.K. Rowling'),
+(209, 'The Hobbit', 'J.R.R. Tolkien'),
+(210, 'Animal Farm', 'George Orwell');
+Inserting records into the Iss_rec table:
+
+INSERT INTO Iss_rec (iss_no, iss_date, Mem_no, book_no) VALUES
+(301, '2023-07-22', 101, 201),
+(302, '2023-07-22', 102, 202),
+(303, '2023-07-21', 103, 203),
+(304, '2023-07-21', 104, 204),
+(305, '2023-07-20', 105, 205),
+(306, '2023-07-20', 106, 206),
+(307, '2023-07-19', 107, 207),
+(308, '2023-07-19', 108, 208),
+(309, '2023-07-18', 109, 209),
+(310, '2023-07-18', 110, 210);
+
+c) List all the student names with their membership numbers:
+
+SELECT s.Stud_name, m.Mem_no
+FROM Student s
+INNER JOIN Membership m ON s.Stud_no = m.Stud_no;
+
+d) List all the issues for the current date with student and Book names:
+
+SELECT s.Stud_name, b.book_name
+FROM Student s
+INNER JOIN Membership m ON s.Stud_no = m.Stud_no
+INNER JOIN Iss_rec i ON m.Mem_no = i.Mem_no
+INNER JOIN Book b ON i.book_no = b.book_no
+WHERE i.iss_date = CURRENT_DATE;
+
+e) Give a count of how many books have been bought by each student:
+
+SELECT s.Stud_name, COUNT(i.iss_no) AS book_count
+FROM Student s
+LEFT JOIN Membership m ON s.Stud_no = m.Stud_no
+LEFT JOIN Iss_rec i ON m.Mem_no = i.Mem_no
+GROUP BY s.Stud_name;
+
+f) Give a list of books taken by student with stud_no as 5:
+
+SELECT s.Stud_name, b.book_name
+FROM Student s
+INNER JOIN Membership m ON s.Stud_no = m.Stud_no
+INNER JOIN Iss_rec i ON m.Mem_no = i.Mem_no
+INNER JOIN Book b ON i.book_no = b.book_no
+WHERE s.Stud_no = 5;
