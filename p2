@@ -1,1 +1,117 @@
+a) Create the tables with appropriate integrity constraints:
 
+STUDENT table:
+sql
+Copy code
+CREATE TABLE STUDENT (
+    Rollno INTEGER PRIMARY KEY,
+    Name VARCHAR(255) NOT NULL,
+    Sem INTEGER NOT NULL,
+    Degree VARCHAR(50) NOT NULL,
+    Contact_no INTEGER NOT NULL,
+    Guide_No INTEGER,
+    FOREIGN KEY (Guide_No) REFERENCES GUIDE(Guide_No)
+);
+GUIDE table:
+sql
+Copy code
+CREATE TABLE GUIDE (
+    Guide_No INTEGER PRIMARY KEY,
+    Guide_name VARCHAR(255) NOT NULL,
+    Guide_reserach_domain VARCHAR(100) NOT NULL,
+    Contact_No INTEGER NOT NULL,
+    Email_Id VARCHAR(255) NOT NULL
+);
+PROJECT table:
+sql
+Copy code
+CREATE TABLE PROJECT (
+    Project_No INTEGER PRIMARY KEY,
+    Project_title VARCHAR(255) NOT NULL,
+    Project_Area VARCHAR(100) NOT NULL,
+    Start_dt DATE,
+    Guide_No INTEGER,
+    FOREIGN KEY (Guide_No) REFERENCES GUIDE(Guide_No)
+);
+GROUP table:
+sql
+Copy code
+CREATE TABLE GROUP (
+    Group_Code INTEGER PRIMARY KEY,
+    Roll_No INTEGER NOT NULL,
+    FOREIGN KEY (Roll_No) REFERENCES STUDENT(Rollno)
+);
+PROJECT_GROUP table:
+sql
+Copy code
+CREATE TABLE PROJECT_GROUP (
+    Group_Code INTEGER,
+    Project_No INTEGER,
+    no_of_students INTEGER,
+    PRIMARY KEY (Group_Code, Project_No),
+    FOREIGN KEY (Group_Code) REFERENCES GROUP(Group_Code),
+    FOREIGN KEY (Project_No) REFERENCES PROJECT(Project_No)
+);
+b) Insert around 10 records in each of the tables (Please note that I'm providing sample data for illustration purposes only):
+
+sql
+Copy code
+-- Insert records into STUDENT table
+INSERT INTO STUDENT (Rollno, Name, Sem, Degree, Contact_no, Guide_No) VALUES
+(1, 'John Doe', 3, 'Computer Science', 1234567890, 101),
+(2, 'Jane Smith', 4, 'Electrical Engineering', 9876543210, 102),
+-- Add more records...
+
+-- Insert records into GUIDE table
+INSERT INTO GUIDE (Guide_No, Guide_name, Guide_reserach_domain, Contact_No, Email_Id) VALUES
+(101, 'Professor Johnson', 'Machine Learning', 987654321, 'johnson@example.com'),
+(102, 'Dr. Williams', 'Artificial Intelligence', 123456789, 'williams@example.com'),
+-- Add more records...
+
+-- Insert records into PROJECT table
+INSERT INTO PROJECT (Project_No, Project_title, Project_Area, Start_dt, Guide_No) VALUES
+(1, 'Autonomous Vehicles', 'Robotics', '2023-01-15', 101),
+(2, 'Sentiment Analysis', 'Natural Language Processing', '2023-02-20', 102),
+-- Add more records...
+
+-- Insert records into GROUP table
+INSERT INTO GROUP (Group_Code, Roll_No) VALUES
+(1001, 1),
+(1001, 2),
+-- Add more records...
+
+-- Insert records into PROJECT_GROUP table
+INSERT INTO PROJECT_GROUP (Group_Code, Project_No, no_of_students) VALUES
+(1001, 1, 2),
+(1002, 2, 3),
+-- Add more records...
+c) Find the list of guides who are guiding more than two student groups:
+
+sql
+Copy code
+SELECT Guide_name
+FROM GUIDE
+WHERE Guide_No IN (
+    SELECT Guide_No
+    FROM PROJECT
+    GROUP BY Guide_No
+    HAVING COUNT(*) > 2
+);
+d) Find the list of project numbers, project names, and names of guides in the domain of Data Base:
+
+vbnet
+Copy code
+SELECT p.Project_No, p.Project_title, g.Guide_name
+FROM PROJECT p
+JOIN GUIDE g ON p.Guide_No = g.Guide_No
+WHERE g.Guide_reserach_domain = 'Data Base';
+e) Create a view as student_project_details that lists student name, project name, and guide name:
+
+vbnet
+Copy code
+CREATE VIEW student_project_details AS
+SELECT s.Name AS Student_name, p.Project_title, g.Guide_name
+FROM STUDENT s
+JOIN PROJECT_GROUP pg ON s.Rollno = pg.Roll_No
+JOIN PROJECT p ON pg.Project_No = p.Project_No
+JOIN GUIDE g ON p.Guide_No = g.Guide_No;
