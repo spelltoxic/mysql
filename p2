@@ -115,3 +115,4 @@ FROM STUDENT s
 JOIN PROJECT_GROUP pg ON s.Rollno = pg.Roll_No
 JOIN PROJECT p ON pg.Project_No = p.Project_No
 JOIN GUIDE g ON p.Guide_No = g.Guide_No;
+
