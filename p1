@@ -118,3 +118,4 @@ INNER JOIN Membership m ON s.Stud_no = m.Stud_no
 INNER JOIN Iss_rec i ON m.Mem_no = i.Mem_no
 INNER JOIN Book b ON i.book_no = b.book_no
 WHERE s.Stud_no = 5;
+
